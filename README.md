@@ -1,14 +1,12 @@
 <img alt="Flutter" src="https://img.shields.io/badge/Flutter-075898?style=flat-squar&logo=flutter&logoColor=white"/>
 
 <p align="center">
-  <img src="https://github.com/shervin-h/outline_pie_chart/blob/main/assets/demo.gif?raw=true" height="600">
+  <img src="https://github.com/shervin-h/outline_pie_chart/blob/main/assets/demo.mp4?raw=true" height="600">
 </p>
 
 # Outline Pie Chart
 
 **Outline Pie Chart** is a Flutter package for creating beautiful, customizable, and animated pie charts. It supports segment gaps, RTL (right-to-left) languages, and provides various customization options to make your data visualization visually engaging and informative.
-
-![Example Pie Chart](https://via.placeholder.com/600x400.png?text=Pie+Chart+Example)
 
 ### Where is it used?
 
