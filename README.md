@@ -1,7 +1,7 @@
 <img alt="Flutter" src="https://img.shields.io/badge/Flutter-075898?style=flat-squar&logo=flutter&logoColor=white"/>
 
 <p align="center">
-  <img src="https://github.com/shervin-h/outline_pie_chart/blob/main/assets/demo.mp4?raw=true" height="600">
+  <img src="https://github.com/shervin-h/outline_pie_chart/blob/main/assets/demo.gif?raw=true" height="600">
 </p>
 
 # Outline Pie Chart
