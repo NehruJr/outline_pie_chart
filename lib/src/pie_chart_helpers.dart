@@ -30,14 +30,36 @@ import '../outline_pie_chart.dart';
 /// scale down the percentages so that they sum to 1.0 (100%).
 ///
 List<PieData> adjustPercentages(List<PieData> data) {
+  if (data.isEmpty) return data;
+
   double totalPercentage = data.fold(0.0, (sum, item) => sum + item.percentage);
-  if (totalPercentage > 1.0) {
+
+  if (totalPercentage == 0) {
+    // If all percentages are 0, distribute equally
+    final equalPercentage = 1.0 / data.length;
+    return data
+        .map((item) => PieData(
+              percentage: equalPercentage,
+              color: item.color,
+              gradient: item.gradient,
+              boxShadows: item.boxShadows,
+              borderRadius: item.borderRadius,
+            ))
+        .toList();
+  }
+
+  if (totalPercentage != 1.0) {
+    // Normalize percentages to sum to 1.0
     return data
         .map((item) => PieData(
               percentage: item.percentage / totalPercentage,
               color: item.color,
+              gradient: item.gradient,
+              boxShadows: item.boxShadows,
+              borderRadius: item.borderRadius,
             ))
         .toList();
   }
+
   return data;
 }
