@@ -86,15 +86,24 @@ class PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final adjustedData = adjustPercentages(data);
     double startAngle = isRTL ? 90.0 : -90.0;
+    
+    // Calculate total degrees available for segments (360 - total gap)
+    final totalGapDegrees = gap * adjustedData.length;
+    final availableDegreesForSegments = 360.0 - totalGapDegrees;
 
-    for (var item in adjustedData) {
-      final sweepAngle = (item.percentage * 360 * animationValue) - gap;
+    for (int i = 0; i < adjustedData.length; i++) {
+      final item = adjustedData[i];
+      
+      // Calculate sweep angle based on available degrees (excluding gaps)
+      final baseSeepAngle = (item.percentage * availableDegreesForSegments);
+      final animatedSweepAngle = baseSeepAngle * animationValue;
 
-      if (sweepAngle > 0) {
-        _drawSegmentWithEffects(canvas, size, item, startAngle, sweepAngle);
+      if (animatedSweepAngle > 0) {
+        _drawSegmentWithEffects(canvas, size, item, startAngle, animatedSweepAngle);
       }
 
-      startAngle += sweepAngle + gap;
+      // Move to next segment start position (include gap)
+      startAngle += animatedSweepAngle + gap;
     }
   }
 
@@ -110,7 +119,7 @@ class PieChartPainter extends CustomPainter {
     final effectiveStrokeWidth = strokeWidth ?? 20.0;
 
     // Draw shadows first (if any)
-    if (item.boxShadows != null) {
+    if (item.boxShadows != null && item.boxShadows!.isNotEmpty) {
       _drawShadows(canvas, rect, item.boxShadows!, startAngle, sweepAngle,
           effectiveStrokeWidth);
     }
@@ -206,3 +215,5 @@ class PieChartPainter extends CustomPainter {
     return true;
   }
 }
+
+//new update
