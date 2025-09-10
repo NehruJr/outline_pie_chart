@@ -86,24 +86,27 @@ class PieChartPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     final adjustedData = adjustPercentages(data);
     double startAngle = isRTL ? 90.0 : -90.0;
-    
-    // Calculate total degrees available for segments (360 - total gap)
-    final totalGapDegrees = gap * adjustedData.length;
-    final availableDegreesForSegments = 360.0 - totalGapDegrees;
 
     for (int i = 0; i < adjustedData.length; i++) {
       final item = adjustedData[i];
       
-      // Calculate sweep angle based on available degrees (excluding gaps)
-      final baseSeepAngle = (item.percentage * availableDegreesForSegments);
-      final animatedSweepAngle = baseSeepAngle * animationValue;
+      // Calculate the full sweep angle for this segment (without animation)
+      final fullSweepAngle = item.percentage * 360.0;
+      
+      // Apply animation to the sweep angle
+      final animatedSweepAngle = fullSweepAngle * animationValue;
+      
+      // Only subtract gap if there will be a next segment and current segment is visible
+      final effectiveSweepAngle = (i < adjustedData.length - 1 && animatedSweepAngle > 0) 
+          ? animatedSweepAngle - gap 
+          : animatedSweepAngle;
 
-      if (animatedSweepAngle > 0) {
-        _drawSegmentWithEffects(canvas, size, item, startAngle, animatedSweepAngle);
+      if (effectiveSweepAngle > 0) {
+        _drawSegmentWithEffects(canvas, size, item, startAngle, effectiveSweepAngle);
       }
 
-      // Move to next segment start position (include gap)
-      startAngle += animatedSweepAngle + gap;
+      // Move to next segment start position
+      startAngle += animatedSweepAngle;
     }
   }
 
@@ -216,4 +219,4 @@ class PieChartPainter extends CustomPainter {
   }
 }
 
-//new update
+//New update 2
