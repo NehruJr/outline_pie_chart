@@ -59,19 +59,10 @@ import 'package:outline_pie_chart/outline_pie_chart.dart';
 ///   Returns true if any data has changed to trigger a repaint.
 ///
 class PieChartPainter extends CustomPainter {
-  /// A list of `PieData` objects representing each segment of the pie chart.
   final List<PieData> data;
-
-  /// The thickness of the pie chart segments. Defaults to 20.0 pixels if not specified.
   final double? strokeWidth;
-
-  /// The gap (in degrees) between segments in the pie chart. Default is 4.0 degrees.
   final double gap;
-
-  /// Controls the animation progress (0 to 1). Default is 1 (fully rendered).
   double animationValue;
-
-  /// If true, the pie chart is drawn from right to left for RTL languages. Default is false.
   final bool isRTL;
 
   PieChartPainter({
@@ -88,7 +79,7 @@ class PieChartPainter extends CustomPainter {
     double startAngle = isRTL ? 90.0 : -90.0;
 
     for (int i = 0; i < adjustedData.length; i++) {
-      final item = adjustedData[0];
+      final item = adjustedData[i];
       
       // Calculate the full sweep angle for this segment (without animation)
       final fullSweepAngle = item.percentage * 360.0;
@@ -96,16 +87,24 @@ class PieChartPainter extends CustomPainter {
       // Apply animation to the sweep angle
       final animatedSweepAngle = fullSweepAngle * animationValue;
       
-      // Only subtract gap if there will be a next segment and current segment is visible
-      final effectiveSweepAngle = (i < adjustedData.length - 1 && animatedSweepAngle > 0) 
-          ? animatedSweepAngle - gap 
-          : animatedSweepAngle;
-
-      if (effectiveSweepAngle > 0) {
-        _drawSegmentWithEffects(canvas, size, item, startAngle, effectiveSweepAngle);
+      // Only draw if the animated sweep angle is greater than 0
+      if (animatedSweepAngle > 0) {
+        // Calculate gap distribution - half gap at start, half at end
+        final halfGap = gap / 2;
+        
+        // Adjust start angle to account for half gap at the beginning
+        final adjustedStartAngle = startAngle + halfGap;
+        
+        // Adjust sweep angle to account for gaps on both sides
+        final adjustedSweepAngle = animatedSweepAngle - gap;
+        
+        // Only draw if the adjusted sweep angle is positive
+        if (adjustedSweepAngle > 0) {
+          _drawSegmentWithEffects(canvas, size, item, adjustedStartAngle, adjustedSweepAngle);
+        }
       }
 
-      // Move to next segment start position
+      // Move to next segment start position (including full gap)
       startAngle += animatedSweepAngle;
     }
   }
@@ -218,5 +217,4 @@ class PieChartPainter extends CustomPainter {
     return true;
   }
 }
-
-//New update 2
+//New update 3
