@@ -1,63 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:outline_pie_chart/outline_pie_chart.dart';
 
-/// ## [PieChartPainter] Class Documentation
-///
-/// A custom painter for drawing a segmented, animated pie chart with enhanced features.
-///
-/// The `PieChartPainter` class is responsible for rendering pie chart segments
-/// based on the provided data, with optional animation, gap spacing, RTL support,
-/// gradients, box shadows, and border radius.
-///
-/// ### Parameters:
-///
-/// - **data** (`List<PieData>`):
-///   A list of `PieData` objects representing each segment of the pie chart.
-///   Each `PieData` contains a `percentage`, `color`, optional `gradient`,
-///   `boxShadows`, and `borderRadius`.
-///
-/// - **strokeWidth** (`double?`):
-///   The thickness of the pie chart segments. If null, defaults to 20.0 pixels.
-///
-/// - **gap** (`double`):
-///   The gap (in degrees) between segments in the pie chart. Default is 4.0 degrees.
-///
-/// - **animationValue** (`double`):
-///   A value between 0 and 1 that controls the animation progress. Default is 1,
-///   meaning the chart is fully rendered. Can be animated to create drawing effects.
-///
-/// - **isRTL** (`bool`):
-///   If true, the pie chart is drawn from right to left (suitable for RTL languages like Persian).
-///   Default is false.
-///
-/// ### Enhanced Features:
-///
-/// - **Gradient Support**: Each segment can have a gradient overlay using the `gradient` property.
-/// - **Box Shadow**: Segments can have shadow effects using the `boxShadows` property.
-/// - **Border Radius**: Segments can have rounded corners using the `borderRadius` property.
-///
-/// ### Methods:
-///
-/// - **paint** (`Canvas canvas, Size size`):
-///   Draws the pie chart on the provided canvas, using the specified size. The method calculates
-///   the start angle and sweep angle for each segment, taking into account RTL support, animation progress,
-///   gradients, shadows, and border radius.
-///
-/// - **_drawSegmentWithEffects**:
-///   Helper method to draw a segment with all enhanced effects (shadow, gradient, radius).
-///
-/// - **_createGradientPaint**:
-///   Creates a paint object with gradient shader for a segment.
-///
-/// - **_drawShadows**:
-///   Draws box shadows for a segment.
-///
-/// - **radians** (`double degrees`):
-///   Converts degrees to radians for use in drawing arcs.
-///
-/// - **shouldRepaint** (`CustomPainter oldDelegate`):
-///   Returns true if any data has changed to trigger a repaint.
-///
 class PieChartPainter extends CustomPainter {
   final List<PieData> data;
   final double? strokeWidth;
@@ -76,7 +19,9 @@ class PieChartPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final adjustedData = adjustPercentages(data);
-    double startAngle = isRTL ? 90.0 : -90.0;
+    
+    // Start from 270 degrees (bottom) instead of -90 (top)
+    double startAngle = isRTL ? 0.0 : 270.0;
 
     for (int i = 0; i < adjustedData.length; i++) {
       final item = adjustedData[i];
@@ -171,7 +116,7 @@ class PieChartPainter extends CustomPainter {
     return paint;
   }
 
-  /// Draws box shadows for a segment
+  /// Draws box shadows for a segment - FIXED to follow arc properly
   void _drawShadows(
     Canvas canvas,
     Rect rect,
@@ -187,8 +132,20 @@ class PieChartPainter extends CustomPainter {
         ..strokeWidth = strokeWidth
         ..maskFilter = MaskFilter.blur(BlurStyle.normal, shadow.blurRadius);
 
-      // Offset the shadow
-      final shadowRect = rect.shift(shadow.offset);
+      // Calculate shadow offset in polar coordinates to follow the arc
+      final center = rect.center;
+      final radius = rect.width / 2;
+      
+      // Calculate the angle for the middle of the segment
+      final middleAngle = startAngle + sweepAngle / 2;
+      final middleAngleRad = radians(middleAngle);
+      
+      // Convert cartesian offset to polar coordinates that follow the arc
+      final offsetX = shadow.offset.dx * cos(middleAngleRad);
+      final offsetY = shadow.offset.dy * sin(middleAngleRad);
+      
+      // Apply the offset to the rectangle
+      final shadowRect = rect.shift(Offset(offsetX, offsetY));
 
       canvas.drawArc(
         shadowRect,
@@ -217,4 +174,3 @@ class PieChartPainter extends CustomPainter {
     return true;
   }
 }
-//New update 3
