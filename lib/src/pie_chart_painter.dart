@@ -88,7 +88,7 @@ class PieChartPainter extends CustomPainter {
     double startAngle = isRTL ? 90.0 : -90.0;
 
     for (int i = 0; i < adjustedData.length; i++) {
-      final item = adjustedData[i];
+      final item = adjustedData[0];
       
       // Calculate the full sweep angle for this segment (without animation)
       final fullSweepAngle = item.percentage * 360.0;
