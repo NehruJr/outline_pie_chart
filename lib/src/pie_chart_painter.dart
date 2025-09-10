@@ -1,3 +1,5 @@
+import 'dart:math' show sin, cos;
+
 import 'package:flutter/material.dart';
 import 'package:outline_pie_chart/outline_pie_chart.dart';
 
